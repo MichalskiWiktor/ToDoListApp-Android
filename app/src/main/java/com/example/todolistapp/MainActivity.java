@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private List<Task> taskList = new ArrayList<>();
     private TaskDatabaseHelper dbHelper;
+    private static final int REQUEST_CODE = 123;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
         addButton = findViewById(R.id.addBtn);
         taskListView = findViewById(R.id.taskListView);
         dbHelper = new TaskDatabaseHelper(this);
-        /*List operations*/
+
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         taskListView.setAdapter(adapter);
         taskListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-        // Obsługa kliknięcia na element liście
+
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -52,42 +54,26 @@ public class MainActivity extends AppCompatActivity {
                 taskListView.getChildAt(position).setBackgroundColor(Color.LTGRAY);
             }
         });
-
-        // Obsługa przycisku "Dodaj"
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selectedPosition = taskListView.getCheckedItemPosition();
-
-                if (selectedPosition != AdapterView.INVALID_POSITION) {
-                    String selectedItem = (String) taskListView.getItemAtPosition(selectedPosition);
-
-                    // Przekaż dane do nowej aktywności
-                    Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                    intent.putExtra("selectedItem", selectedItem);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
-
-        // Wczytanie listy zadań z bazy danych przy uruchomieniu aplikacji
         loadTaskList();
     }
-
-    // Dodawanie nowego zadania do bazy danych
-    private void insertTask(String taskName) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(TaskDatabaseHelper.COLUMN_TASK, taskName);
-
-        try {
-            db.insert(TaskDatabaseHelper.TASK_TABLE_NAME, null, values);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.close();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                loadTaskList();
+            }
         }
     }
+
+
 
     // Usuwanie zadania z bazy danych
     private void deleteTask(Task task) {
@@ -117,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 Task task = new Task();
                 task.setId(cursor.getLong(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_ID)));
                 task.setTaskName(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_TASK)));
+                task.setTaskDescription(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_DES)));
+                task.setTaskDate(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_DATE)));
                 taskList.add(task);
                 adapter.add(task.getTaskName());
             }
