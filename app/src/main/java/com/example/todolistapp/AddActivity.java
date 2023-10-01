@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ public class AddActivity extends AppCompatActivity {
     private EditText textName;
     private EditText textDescription;
     private Button addBtn;
+    private CheckBox taskStatus;
     private TaskDatabaseHelper dbHelper;
 
     @SuppressLint("MissingInflatedId")
@@ -28,9 +30,10 @@ public class AddActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        textName = findViewById(R.id.textName);
-        textDescription = findViewById(R.id.textDesc);
+        textName = findViewById(R.id.taskName);
+        textDescription = findViewById(R.id.taskDesc);
         addBtn = findViewById(R.id.addNewTaskBtn);
+        taskStatus = findViewById(R.id.taskStatus);
         dbHelper = new TaskDatabaseHelper(this);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
@@ -39,12 +42,16 @@ public class AddActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String taskName = textName.getText().toString().trim();
                 String textDesc = textDescription.getText().toString().trim();
+                Boolean taskStat = taskStatus.isChecked();
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
                 String textDate = dtf.format(now).toString();
 
                 if (!taskName.isEmpty()) {
-                    insertTask(taskName, textDesc, textDate);
+                    if(taskStat)
+                        insertTask(taskName, textDesc, textDate, 1);
+                    else
+                        insertTask(taskName, textDesc, textDate, 0);
                     Toast.makeText(AddActivity.this, taskName, Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
@@ -54,12 +61,13 @@ public class AddActivity extends AppCompatActivity {
             }
         });
     }
-    private void insertTask(String taskName, String textDesc, String textDate) {
+    private void insertTask(String taskName, String taskDesc, String taskDate, int taskStatus) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TaskDatabaseHelper.COLUMN_TASK, taskName);
-        values.put(TaskDatabaseHelper.COLUMN_DES, textDesc);
-        values.put(TaskDatabaseHelper.COLUMN_DATE, textDate);
+        values.put(TaskDatabaseHelper.COLUMN_DES, taskDesc);
+        values.put(TaskDatabaseHelper.COLUMN_DATE, taskDate);
+        values.put(TaskDatabaseHelper.COLUMN_STATUS, taskStatus);
 
         try {
             db.insert(TaskDatabaseHelper.TASK_TABLE_NAME, null, values);

@@ -22,7 +22,7 @@
         android:text="Nazwa:" />
 
     <EditText
-        android:id="@+id/textName"
+        android:id="@+id/taskName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -36,12 +36,26 @@
         android:text="Opis:" />
 
     <EditText
-        android:id="@+id/textDesc"
+        android:id="@+id/taskDesc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Opis" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/taskStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Status" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/addNewTaskBtn"

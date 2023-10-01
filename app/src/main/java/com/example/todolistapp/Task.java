@@ -5,6 +5,7 @@ public class Task {
     private String taskName;
     private String taskDescription;
     private String taskDate;
+    private int taskStatus;
 
     public long getId() {
         return id;
@@ -36,6 +37,14 @@ public class Task {
 
     public void setTaskDate(String taskDate) {
         this.taskDate = taskDate;
+    }
+
+    public int getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(int taskStatus) {
+        this.taskStatus = taskStatus;
     }
 }
 
