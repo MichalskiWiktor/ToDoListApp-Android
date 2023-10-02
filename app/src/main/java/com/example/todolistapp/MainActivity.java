@@ -1,36 +1,25 @@
 package com.example.todolistapp;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CustomAdapterListener{
 
-    private Button addButton, showButton, editButton, deleteButton, doneBtn;
+    private Button addButton;
     private ListView taskListView;
-    private ArrayAdapter<String> adapter;
+    private CustomAdapter customAdapter;
+    private HashMap<Integer, Task> taskPosition = new HashMap<Integer, Task>();
     private List<Task> taskList = new ArrayList<>();
     private TaskDatabaseHelper dbHelper;
     private static final int REQUEST_CODE = 123;
@@ -43,24 +32,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         addButton = findViewById(R.id.addBtn);
-        doneBtn = findViewById(R.id.doneBtn);
         taskListView = findViewById(R.id.taskListView);
-        dbHelper = new TaskDatabaseHelper(this);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        taskListView.setAdapter(adapter);
-        taskListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        /* Setting Up List */
+        loadTaskList();
+        for(int i=0;i<taskList.size(); i++){
+            taskPosition.put(i, taskList.get(i));
+        }
+        customAdapter = new CustomAdapter(this, taskList, taskPosition, this);
+        taskListView.setAdapter(customAdapter);
+        customAdapter.notifyDataSetChanged();
 
-
-        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for(int i=0; i<taskListView.getChildCount(); i++) {
-                    taskListView.getChildAt(i).setBackgroundColor(Color.WHITE);
-                }
-                taskListView.getChildAt(position).setBackgroundColor(Color.LTGRAY);
-            }
-        });
+        /* New Task Button */
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,70 +51,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
-        doneBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int selectedPosition = taskListView.getCheckedItemPosition();
-
-                if (selectedPosition != AdapterView.INVALID_POSITION) {
-                    taskListView.getChildAt(selectedPosition).setBackgroundColor(Color.RED);
-                    HashMap<String, Integer> newData = new HashMap<>();
-                    newData.put(TaskDatabaseHelper.COLUMN_STATUS, 0);
-                    updateTask(selectedPosition, newData);
-                }
-            }
-        });
-
         loadTaskList();
+        customAdapter.notifyDataSetChanged();
     }
-    @Override
+    @Override // After successfully adding new Task reload the task list
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 loadTaskList();
+                customAdapter.notifyDataSetChanged();
             }
         }
     }
-    public void updateTask(long taskId, HashMap<String, Integer> newData) { //using haspmap kay cann be COLUM_TASK and value new data
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            newData.forEach((key, value) -> {
-                values.put(key, value);
-            });
-        }
-        try {
-            db.update(TaskDatabaseHelper.TASK_TABLE_NAME, values, TaskDatabaseHelper.COLUMN_ID + " = ?", new String[]{String.valueOf(taskId)});
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.close();
-        }
-    }
 
-
-
-
-    // Usuwanie zadania z bazy danych
-    private void deleteTask(Task task) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        try {
-            db.delete(TaskDatabaseHelper.TASK_TABLE_NAME,
-                    TaskDatabaseHelper.COLUMN_ID + " = ?",
-                    new String[]{String.valueOf(task.getId())});
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.close();
-        }
-    }
-
-    // Wczytywanie listy zadań z bazy danych i aktualizacja interfejsu użytkownika
     @SuppressLint("Range")
     private void loadTaskList() {
         taskList.clear();
-        adapter.clear();
+        dbHelper = new TaskDatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = null;
 
@@ -145,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 task.setTaskDate(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_DATE)));
                 task.setTaskStatus(cursor.getInt(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_STATUS)));
                 taskList.add(task);
-                adapter.add(String.valueOf(task.getId()) + task.getTaskName());
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,7 +92,11 @@ public class MainActivity extends AppCompatActivity {
             }
             db.close();
         }
+    }
 
-        adapter.notifyDataSetChanged();
+    @Override
+    public void onItemClicked(HashMap<Integer, Task> taskPosition) {
+        loadTaskList();
+        customAdapter.notifyDataSetChanged();
     }
 }

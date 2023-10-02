@@ -7,9 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class TaskDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ToDoList.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
-    // Tabela zadan
     public static final String TASK_TABLE_NAME = "tasks";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_TASK = "task_name";
