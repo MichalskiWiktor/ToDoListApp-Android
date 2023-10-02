@@ -11,7 +11,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CustomAdapter extends BaseAdapter {
     private Context context;
@@ -63,7 +62,6 @@ public class CustomAdapter extends BaseAdapter {
         }
 
         Task item = dataList.get(position);
-
         if(item.getTaskStatus() == 0)
             holder.checkbox.setChecked(false);
         else
@@ -74,9 +72,7 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 deleteTask(taskPosition.get(position));
-                taskPosition.remove(position);
                 mListener.onItemClicked(taskPosition);
-                ///reload listy
             }
         });
 
@@ -88,16 +84,6 @@ public class CustomAdapter extends BaseAdapter {
             db.delete(TaskDatabaseHelper.TASK_TABLE_NAME,
                     TaskDatabaseHelper.COLUMN_ID + " = ?",
                     new String[]{String.valueOf(task.getId())});
-            int positionToRemove = -1;
-            for (Map.Entry<Integer, Task> entry : taskPosition.entrySet()) {
-                if (entry.getValue().getId() == task.getId()) {
-                    positionToRemove = entry.getKey();
-                    break;
-                }
-            }
-            if (positionToRemove != -1) {
-                taskPosition.remove(positionToRemove);
-            }
         } finally {
             db.close();
         }

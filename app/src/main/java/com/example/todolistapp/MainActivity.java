@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
     private HashMap<Integer, Task> taskPosition = new HashMap<Integer, Task>();
     private List<Task> taskList = new ArrayList<>();
     private TaskDatabaseHelper dbHelper;
-    private static final int REQUEST_CODE = 123;
 
 
     @SuppressLint("MissingInflatedId")
@@ -33,31 +32,31 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
 
         addButton = findViewById(R.id.addBtn);
         taskListView = findViewById(R.id.taskListView);
+        setUpList();
 
-        /* Setting Up List */
+        /* New Task */
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                startActivityForResult(intent, 123);
+            }
+        });
+    }
+    public void setUpList(){
         loadTaskList();
         for(int i=0;i<taskList.size(); i++){
             taskPosition.put(i, taskList.get(i));
         }
         customAdapter = new CustomAdapter(this, taskList, taskPosition, this);
         taskListView.setAdapter(customAdapter);
-        customAdapter.notifyDataSetChanged();
-
-        /* New Task Button */
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
         loadTaskList();
         customAdapter.notifyDataSetChanged();
     }
     @Override // After successfully adding new Task reload the task list
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == 123) {
             if (resultCode == RESULT_OK) {
                 loadTaskList();
                 customAdapter.notifyDataSetChanged();
@@ -82,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
                 task.setTaskDate(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_DATE)));
                 task.setTaskStatus(cursor.getInt(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_STATUS)));
                 taskList.add(task);
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
 
     @Override
     public void onItemClicked(HashMap<Integer, Task> taskPosition) {
-        loadTaskList();
-        customAdapter.notifyDataSetChanged();
+        setUpList();
     }
 }
