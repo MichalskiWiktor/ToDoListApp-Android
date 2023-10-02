@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 123) {
             if (resultCode == RESULT_OK) {
-                loadTaskList();
-                customAdapter.notifyDataSetChanged();
+                setUpList();
             }
         }
     }

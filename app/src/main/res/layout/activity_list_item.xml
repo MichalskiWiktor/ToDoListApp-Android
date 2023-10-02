@@ -1,18 +1,19 @@
 <!-- res/layout/list_item_layout.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp">
 
     <CheckBox
-        android:id="@+id/checkbox"
+        android:id="@+id/statusCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/taskNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -20,15 +21,30 @@
         android:text="List Item Text"/>
 
     <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
+        android:id="@+id/showBtn"
+        android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:text="Delete" />
+        android:layout_weight="1"
+        android:scrollbarSize="1dp"
+        android:text="Show"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/editBtn"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="Edit"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/deleteBtn"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="X"
+        android:textSize="12sp"
+        app:iconPadding="1dp" />
+
 </LinearLayout>

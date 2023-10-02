@@ -19,6 +19,11 @@ public class CustomAdapter extends BaseAdapter {
     private HashMap<Integer, Task> taskPosition;
     private CustomAdapterListener mListener;
 
+    private CheckBox statusCheckbox;
+    private TextView taskNameTextView;
+    private Button editBtn;
+    private Button deleteBtn;
+
     public CustomAdapter(Context context, List<Task> dataList, HashMap<Integer, Task> taskPosition, CustomAdapterListener listener) {
         this.context = context;
         this.dataList = dataList;
@@ -43,32 +48,32 @@ public class CustomAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
         dbHelper = new TaskDatabaseHelper(context);
 
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.activity_list_item, parent, false);
 
-            holder = new ViewHolder();
-            holder.checkbox = convertView.findViewById(R.id.checkbox);
-            holder.textView = convertView.findViewById(R.id.textView);
-            holder.button1 = convertView.findViewById(R.id.button1);
-            holder.button2 = convertView.findViewById(R.id.button2);
+            this.statusCheckbox = convertView.findViewById(R.id.statusCheckbox);
+            this.taskNameTextView = convertView.findViewById(R.id.taskNameTextView);
+            this.editBtn = convertView.findViewById(R.id.editBtn);
+            this.deleteBtn = convertView.findViewById(R.id.deleteBtn);
 
-            convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            System.out.println("Error");
         }
 
         Task item = dataList.get(position);
         if(item.getTaskStatus() == 0)
-            holder.checkbox.setChecked(false);
+            this.statusCheckbox.setChecked(false);
         else
-            holder.checkbox.setChecked(true);
-        holder.textView.setText(item.getTaskName());
+            this.statusCheckbox.setChecked(true);
+        this.taskNameTextView.setText(item.getTaskName());
 
-        holder.button2.setOnClickListener(new View.OnClickListener() {
+
+
+        /* On click functions */
+        this.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteTask(taskPosition.get(position));
