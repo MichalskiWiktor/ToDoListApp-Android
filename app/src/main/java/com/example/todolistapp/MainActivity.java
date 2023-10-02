@@ -23,8 +23,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
     private List<Task> taskList = new ArrayList<>();
     private TaskDatabaseHelper dbHelper;
 
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,5 +92,11 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
     @Override
     public void onItemClicked(HashMap<Integer, Task> taskPosition) {
         setUpList();
+    }
+    @Override
+    public void showBtnClicked(Task task) {
+        Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+        intent.putExtra("task", String.valueOf(task.getId()));
+        startActivity(intent);
     }
 }

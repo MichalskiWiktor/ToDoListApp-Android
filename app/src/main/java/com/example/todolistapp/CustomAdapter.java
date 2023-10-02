@@ -1,6 +1,8 @@
 package com.example.todolistapp;
 
 import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ public class CustomAdapter extends BaseAdapter {
 
     private CheckBox statusCheckbox;
     private TextView taskNameTextView;
+    private Button showBtn;
     private Button editBtn;
     private Button deleteBtn;
 
@@ -56,9 +59,9 @@ public class CustomAdapter extends BaseAdapter {
 
             this.statusCheckbox = convertView.findViewById(R.id.statusCheckbox);
             this.taskNameTextView = convertView.findViewById(R.id.taskNameTextView);
+            this.showBtn = convertView.findViewById(R.id.showBtn);
             this.editBtn = convertView.findViewById(R.id.editBtn);
             this.deleteBtn = convertView.findViewById(R.id.deleteBtn);
-
         } else {
             System.out.println("Error");
         }
@@ -73,6 +76,12 @@ public class CustomAdapter extends BaseAdapter {
 
 
         /* On click functions */
+        this.showBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.showBtnClicked(taskPosition.get(position));
+            }
+        });
         this.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,13 +101,6 @@ public class CustomAdapter extends BaseAdapter {
         } finally {
             db.close();
         }
-    }
-
-    static class ViewHolder {
-        CheckBox checkbox;
-        TextView textView;
-        Button button1;
-        Button button2;
     }
 }
 
