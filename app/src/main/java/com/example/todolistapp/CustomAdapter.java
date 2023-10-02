@@ -1,5 +1,6 @@
 package com.example.todolistapp;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
@@ -76,6 +77,24 @@ public class CustomAdapter extends BaseAdapter {
 
 
         /* On click functions */
+        this.statusCheckbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                try {
+
+                    ContentValues values = new ContentValues();
+                    if(statusCheckbox.isChecked())
+                        values.put(TaskDatabaseHelper.COLUMN_STATUS, 1);
+                    else
+                        values.put(TaskDatabaseHelper.COLUMN_STATUS, 0);
+                    db.update(TaskDatabaseHelper.TASK_TABLE_NAME, values,TaskDatabaseHelper.COLUMN_ID + " = ?",
+                            new String[]{String.valueOf(item.getId())});
+                } finally {
+                    db.close();
+                }
+            }
+        });
         this.showBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
