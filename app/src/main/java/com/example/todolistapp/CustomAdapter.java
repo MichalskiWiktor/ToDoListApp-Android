@@ -64,7 +64,7 @@ public class CustomAdapter extends BaseAdapter {
             this.editBtn = convertView.findViewById(R.id.editBtn);
             this.deleteBtn = convertView.findViewById(R.id.deleteBtn);
         } else {
-            System.out.println("Error");
+            System.out.println("Error 2");
         }
 
         Task item = dataList.get(position);
@@ -99,6 +99,12 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 mListener.showBtnClicked(taskPosition.get(position));
+            }
+        });
+        this.editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.editBtnClicked(taskPosition.get(position));
             }
         });
         this.deleteBtn.setOnClickListener(new View.OnClickListener() {

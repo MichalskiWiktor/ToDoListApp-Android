@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 123) {
             if (resultCode == RESULT_OK) {
+                System.out.println("halo");
                 setUpList();
             }
         }
@@ -98,5 +99,11 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
         Intent intent = new Intent(MainActivity.this, ShowActivity.class);
         intent.putExtra("task", String.valueOf(task.getId()));
         startActivity(intent);
+    }
+    @Override
+    public void editBtnClicked(Task task) {
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+        intent.putExtra("task", String.valueOf(task.getId()));
+        startActivityForResult(intent, 123);
     }
 }
