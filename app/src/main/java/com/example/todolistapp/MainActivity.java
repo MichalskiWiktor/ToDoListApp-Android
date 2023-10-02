@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -72,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
                 int selectedPosition = taskListView.getCheckedItemPosition();
 
                 if (selectedPosition != AdapterView.INVALID_POSITION) {
-
+                    taskListView.getChildAt(selectedPosition).setBackgroundColor(Color.RED);
+                    HashMap<String, Integer> newData = new HashMap<>();
+                    newData.put(TaskDatabaseHelper.COLUMN_STATUS, 0);
+                    updateTask(selectedPosition, newData);
                 }
             }
         });
@@ -88,6 +93,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    public void updateTask(long taskId, HashMap<String, Integer> newData) { //using haspmap kay cann be COLUM_TASK and value new data
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            newData.forEach((key, value) -> {
+                values.put(key, value);
+            });
+        }
+        try {
+            db.update(TaskDatabaseHelper.TASK_TABLE_NAME, values, TaskDatabaseHelper.COLUMN_ID + " = ?", new String[]{String.valueOf(taskId)});
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
 
 
 
@@ -123,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 task.setTaskDate(cursor.getString(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_DATE)));
                 task.setTaskStatus(cursor.getInt(cursor.getColumnIndex(TaskDatabaseHelper.COLUMN_STATUS)));
                 taskList.add(task);
-                adapter.add(task.getTaskName());
+                adapter.add(String.valueOf(task.getId()) + task.getTaskName());
             }
         } catch (SQLException e) {
             e.printStackTrace();
