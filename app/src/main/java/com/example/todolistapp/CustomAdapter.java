@@ -74,25 +74,23 @@ public class CustomAdapter extends BaseAdapter {
             this.statusCheckbox.setChecked(true);
         this.taskNameTextView.setText(item.getTaskName());
 
-
-
         /* On click functions */
         this.statusCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 try {
-
                     ContentValues values = new ContentValues();
-                    if(statusCheckbox.isChecked())
+                    if(item.getTaskStatus() == 0){
                         values.put(TaskDatabaseHelper.COLUMN_STATUS, 1);
-                    else
+                    } else
                         values.put(TaskDatabaseHelper.COLUMN_STATUS, 0);
                     db.update(TaskDatabaseHelper.TASK_TABLE_NAME, values,TaskDatabaseHelper.COLUMN_ID + " = ?",
                             new String[]{String.valueOf(item.getId())});
                 } finally {
                     db.close();
                 }
+                mListener.reLoadList();
             }
         });
         this.showBtn.setOnClickListener(new View.OnClickListener() {

@@ -74,6 +74,8 @@ public class EditActivity extends AppCompatActivity {
                         } finally {
                             db.close();
                         }
+                        Intent resultIntent = new Intent();
+                        setResult(RESULT_OK, resultIntent);
                         finish();
                     }
                 });

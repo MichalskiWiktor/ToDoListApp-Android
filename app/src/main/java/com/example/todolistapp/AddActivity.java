@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -52,9 +53,10 @@ public class AddActivity extends AppCompatActivity {
                         insertTask(taskName, textDesc, textDate, 1);
                     else
                         insertTask(taskName, textDesc, textDate, 0);
-                    Toast.makeText(AddActivity.this, taskName, Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
+                    Intent resultIntent = new Intent();
+                    setResult(RESULT_OK, resultIntent);
                     finish();
+
                 } else {
                     Toast.makeText(AddActivity.this, "Wprowadź nazwę zadania", Toast.LENGTH_SHORT).show();
                 }

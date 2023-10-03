@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivityForResult(intent, 123);
+                someActivityResultLauncher.launch(intent);
             }
         });
     }
@@ -50,16 +53,6 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
         taskListView.setAdapter(customAdapter);
         loadTaskList();
         customAdapter.notifyDataSetChanged();
-    }
-    @Override // After successfully adding new Task reload the task list
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 123) {
-            if (resultCode == RESULT_OK) {
-                System.out.println("halo");
-                setUpList();
-            }
-        }
     }
 
     @SuppressLint("Range")
@@ -104,6 +97,16 @@ public class MainActivity extends AppCompatActivity implements CustomAdapterList
     public void editBtnClicked(Task task) {
         Intent intent = new Intent(MainActivity.this, EditActivity.class);
         intent.putExtra("task", String.valueOf(task.getId()));
-        startActivityForResult(intent, 123);
+        someActivityResultLauncher.launch(intent);
     }
+    @Override
+    public void reLoadList(){
+        setUpList();
+    }
+    private ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    setUpList();                }
+            });
 }
